@@ -45,6 +45,8 @@ ACTIVITY_KEYS = [
     "summary_polyline",
     "average_heartrate",
     "average_speed",
+    "elevation_high",
+    "elevation_low"
 ]
 
 
@@ -64,6 +66,8 @@ class Activity(Base):
     summary_polyline = Column(String)
     average_heartrate = Column(Float)
     average_speed = Column(Float)
+    elevation_high = Column(Float)
+    elevation_low = Column(Float)
     streak = None
 
     def to_dict(self):
@@ -123,6 +127,8 @@ def update_or_create_activity(session, run_activity):
                 location_country=location_country,
                 average_heartrate=run_activity.average_heartrate,
                 average_speed=float(run_activity.average_speed),
+                elevation_high=float(run_activity.elev_high) if run_activity.elev_high else 0,
+                elevation_low=float(run_activity.elev_low) if run_activity.elev_low else 0,
                 summary_polyline=(
                     run_activity.map and run_activity.map.summary_polyline or ""
                 ),
@@ -138,6 +144,8 @@ def update_or_create_activity(session, run_activity):
             activity.subtype = run_activity.subtype
             activity.average_heartrate = run_activity.average_heartrate
             activity.average_speed = float(run_activity.average_speed)
+            activity.elevation_high=float(run_activity.elev_high) if run_activity.elev_high else 0,
+            activity.elevation_low=float(run_activity.elev_low) if run_activity.elev_low else 0,
             activity.summary_polyline = (
                 run_activity.map and run_activity.map.summary_polyline or ""
             )

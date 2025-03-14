@@ -46,11 +46,15 @@ const RunTable = ({
       ? aTotalSeconds - bTotalSeconds
       : bTotalSeconds - aTotalSeconds;
   };
+  const sortElevFunc:SortFunc = (a: Activity, b: Activity) =>
+    sortFuncInfo === 'Elev Gain' ? a.elevation_high - b.elevation_high : b.elevation_high - a.elevation_high;
+
   const sortDateFuncClick =
     sortFuncInfo === 'Date' ? sortDateFunc : sortDateFuncReverse;
   const sortFuncMap = new Map([
     ['KM', sortKMFunc],
     ['Pace', sortPaceFunc],
+    ['Elev Gain', sortElevFunc],
     ['BPM', sortBPMFunc],
     ['Time', sortRunTimeFunc],
     ['Date', sortDateFuncClick],

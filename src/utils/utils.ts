@@ -25,6 +25,8 @@ export interface Activity {
   average_heartrate?: number | null;
   average_speed: number;
   streak: number;
+  elevation_high: number;
+  elevation_low: number;
 }
 
 const titleForShow = (run: Activity): string => {
