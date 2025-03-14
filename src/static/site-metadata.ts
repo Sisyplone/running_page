@@ -11,13 +11,17 @@ interface ISiteMetadataResult {
 
 const data: ISiteMetadataResult = {
   siteTitle: 'Running Page',
-  siteUrl: 'https://yihong.run',
+  siteUrl: 'https://sisyplone.github.io/running_page',
   logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTtc69JxHNcmN1ETpMUX4dozAgAN6iPjWalQ&usqp=CAU',
   description: 'Personal site and blog',
   navLinks: [
     {
-      name: 'Blog',
-      url: 'https://github.com/yihong0618/gitblog',
+      name: 'Run',
+      url: 'https://sisyplone.github.io/running_page',
+    },
+    {
+      name: 'Cycling',
+      url: 'https://sisyplone.github.io/cycling_page',
     },
     {
       name: 'About',
