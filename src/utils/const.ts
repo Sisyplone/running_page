@@ -52,7 +52,7 @@ const IS_CHINESE = true;
 const USE_ANIMATION_FOR_GRID = false;
 const CHINESE_INFO_MESSAGE = (yearLength: number, year: string): string => {
   const yearStr = year === 'Total' ? '所有' : ` ${year} `;
-  return `我用 App 记录自己户外运动 ${yearLength} 年了，下面列表展示的是${yearStr}的数据`;
+  return `记录户外运动 ${yearLength} 年了，以下展示的是${yearStr}的数据。`;
 };
 const ENGLISH_INFO_MESSAGE = (yearLength: number, year: string): string =>
   `Running Journey with ${yearLength} Years, the table shows year ${year} data`;
@@ -112,12 +112,13 @@ const TIME_TITLES = {
   NIGHT_TITLE,
 }
 
-const ACT_TITLES:Map<string, string> = new Map<string, string>();
-ACT_TITLES.set("Run", "跑步");
-ACT_TITLES.set("Trail Run", "越野跑");
-ACT_TITLES.set("Ride", "骑行");
-ACT_TITLES.set("Hike", "徒步");
-ACT_TITLES.set("Walk", "步行");
+const ACT_TITLES: { [key: string]: string } = {
+  "Run": IS_CHINESE ? "跑步": "Run",
+  "Trail Run": IS_CHINESE ? "越野跑": "Trail Run",
+  "Ride": IS_CHINESE ? "骑行": "Ride",
+  "Hike": IS_CHINESE ? "徒步": "Hike",
+  "Walk": IS_CHINESE ? "步行": "Walk"
+};
 
 export {
   USE_GOOGLE_ANALYTICS,

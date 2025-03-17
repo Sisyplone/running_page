@@ -1,98 +1,116 @@
-import { lazy, Suspense } from 'react';
+import React, { lazy, Suspense } from 'react';
 import Stat from '@/components/Stat';
 import useActivities from '@/hooks/useActivities';
-import { formatPace, colorFromType } from '@/utils/utils';
+import { colorFromType } from '@/utils/utils';
 import useHover from '@/hooks/useHover';
 import { yearStats } from '@assets/index';
 import { loadSvgComponent } from '@/utils/svgUtils';
 import WorkoutStat from '@/components/WorkoutStat';
 
-const YearStat = ({ year, onClick, onClickTypeInYear }: { year: string, onClick: (_year: string) => void, onClickTypeInYear:(_year:string, _type: string) => void }) => {
-  let { activities: runs, years } = useActivities();
-  // for hover
+// 类型定义
+interface YearStatProps {
+  year: string;
+  onClick: (_year: string) => void;
+  onClickTypeInYear: (_year: string, _type: string) => void;
+}
+
+const YearStat: React.FC<YearStatProps> = ({ year, onClick, onClickTypeInYear }) => {
+  const { activities: runs, years } = useActivities();
   const [hovered, eventHandlers] = useHover();
-  // lazy Component
   const YearSVG = lazy(() => loadSvgComponent(yearStats, `./year_${year}.svg`));
 
-  if (years.includes(year)) {
-    runs = runs.filter((run) => run.start_date_local.slice(0, 4) === year);
-  }
+  // 过滤符合年份的活动
+  const filteredRuns = years.includes(year)
+    ? runs.filter((run) => run.start_date_local.startsWith(year))
+    : runs;
 
-  const cumulativeDataMap = {};
+  // 计算统计数据
+  const {
+    sumDistance,
+    sumElevationGain,
+    streak,
+    cumulativeDataMap,
+    heartRateTotal,
+    heartRateNullCount
+  } = filteredRuns.reduce(
+    (acc, run) => {
+      const { distance = 0, elevation_high = 0, average_speed, type, average_heartrate, streak } = run;
 
-  let sumDistance = 0;
-  let sumElevationGain = 0;
-  let streak = 0;
-  let pace = 0; // eslint-disable-line no-unused-vars
-  let paceNullCount = 0; // eslint-disable-line no-unused-vars
-  let heartRate = 0;
-  let heartRateNullCount = 0;
+      acc.sumDistance += distance;
+      acc.sumElevationGain += elevation_high;
+      if (streak) acc.streak = Math.max(acc.streak, streak);
 
-  runs.forEach((run) => {
-    sumDistance += run.distance || 0;
-    sumElevationGain += run.elevation_high || 0;
-    if (run.average_speed) {
-      if(cumulativeDataMap[run.type]){
-        var [oriCount, oriSecondsAvail, oriMetersAvail] = cumulativeDataMap[run.type]
-        cumulativeDataMap[run.type] = [oriCount + 1, oriSecondsAvail + (run.distance || 0) / run.average_speed, oriMetersAvail + (run.distance || 0)]
-      }else{
-        cumulativeDataMap[run.type] = [1, (run.distance || 0) / run.average_speed, run.distance]
+      if (average_speed) {
+        const [count, totalSeconds, totalMeters] = acc.cumulativeDataMap[type] || [0, 0, 0];
+        acc.cumulativeDataMap[type] = [count + 1, totalSeconds + distance / average_speed, totalMeters + distance];
       }
-    }
-    if (run.average_heartrate) {
-      heartRate += run.average_heartrate;
-    } else {
-      heartRateNullCount++;
-    }
-    if (run.streak) {
-      streak = Math.max(streak, run.streak);
-    }
-  });
-  const hasHeartRate = !(heartRate === 0);
-  const avgHeartRate = (heartRate / (runs.length - heartRateNullCount)).toFixed(0);
 
-  const workoutsArr = Object.entries(cumulativeDataMap);
-  workoutsArr.sort((a, b) => {
-    return b[1][0] - a[1][0];
-  })
+      if (average_heartrate) {
+        acc.heartRateTotal += average_heartrate;
+      } else {
+        acc.heartRateNullCount++;
+      }
+
+      return acc;
+    },
+    {
+      sumDistance: 0,
+      sumElevationGain: 0,
+      streak: 0,
+      cumulativeDataMap: {} as Record<string, [number, number, number]>,
+      heartRateTotal: 0,
+      heartRateNullCount: 0,
+    }
+  );
+
+  const hasHeartRate = heartRateTotal > 0;
+  const avgHeartRate = hasHeartRate
+    ? (heartRateTotal / (filteredRuns.length - heartRateNullCount)).toFixed(0)
+    : 0;
+
+  // 生成运动类型统计数据
+  const workoutsArr = Object.entries(cumulativeDataMap).sort((a, b) => b[1][0] - a[1][0]);
+
+  // 渲染心率统计
+  const renderHeartRate = () =>
+    hasHeartRate && <Stat value={avgHeartRate} description=" Avg Heart Rate" />;
+
+  // 渲染不同类型的运动数据
+  const renderWorkouts = () =>
+    workoutsArr.map(([type, [count, , totalMeters]]) => (
+      <WorkoutStat
+        key={type}
+        value={count}
+        description={`${type}s`}
+        distance={(totalMeters / 1000).toFixed(0)}
+        color={colorFromType(type)}
+        onClick={(e) => {
+          e.stopPropagation();
+          onClickTypeInYear(year, type);
+        }}
+      />
+    ));
+
   return (
-    <div
-      className="cursor-pointer"
-      onClick={() => onClick(year)}
-      {...eventHandlers}
-    >
+    <div className="cursor-pointer" onClick={() => onClick(year)} {...eventHandlers}>
       <section>
         <Stat value={year} description=" Journey" />
-        { sumDistance > 0 &&
+        {sumDistance > 0 && (
           <WorkoutStat
-            key='total'
-            value={runs.length}
-            description={" Total"}
-            distance={(sumDistance/1000.0).toFixed(0)}
+            key="total"
+            value={filteredRuns.length}
+            description=" Total"
+            distance={(sumDistance / 1000).toFixed(0)}
           />
-        }
-        { workoutsArr.map(([type, count]) => (
-          <WorkoutStat
-            key={type}
-            value={count[0]}
-            description={`${type}`+"s"}
-            distance={(count[2]/1000.0).toFixed(0)}
-            color={colorFromType(type)}
-            onClick={(e: Event) => {
-              onClickTypeInYear(year, type);
-              e.stopPropagation();
-            }}
-          />
-        ))}
-        { sumElevationGain > 0 &&
-          <Stat value={sumElevationGain.toFixed(0)} description="M Elevation Gain" className="pb-2"/>
-        }
-        <Stat value={`${streak} day`} description=" Streak" />
-        {hasHeartRate && (
-          <Stat value={avgHeartRate} description=" Avg Heart Rate" />
         )}
+        {renderWorkouts()}
+        {sumElevationGain > 0 && (
+          <Stat value={sumElevationGain.toFixed(0)} description="M Elevation Gain" className="pb-2" />
+        )}
+        <Stat value={`${streak} day`} description=" Streak" />
+        {renderHeartRate()}
       </section>
-      {year !== 'Total' && hovered && (
+      {year !== "Total" && hovered && (
         <Suspense fallback="loading...">
           <YearSVG className="my-4 h-4/6 w-4/6 border-0 p-0" />
         </Suspense>

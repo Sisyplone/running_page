@@ -266,6 +266,14 @@ const getActivitySport = (act: Activity): string => {
   return "";
 }
 
+const getTimePeriod = (hour: number): string => {
+  if (hour >= 0 && hour <= 10) return TIME_TITLES.MORNING_TITLE;
+  if (hour > 10 && hour <= 12) return TIME_TITLES.MIDDAY_TITLE;
+  if (hour > 12 && hour <= 18) return TIME_TITLES.AFTERNOON_TITLE;
+  if (hour > 18 && hour <= 19) return TIME_TITLES.EVENING_TITLE;
+  return TIME_TITLES.NIGHT_TITLE;
+};
+
 const titleForRun = (run: Activity): string => {
   if (RICH_TITLE) {
     // 1. try to use user defined name
@@ -290,19 +298,9 @@ const titleForRun = (run: Activity): string => {
       return RUN_TITLES.FULL_MARATHON_RUN_TITLE;
     }
   }
-  if (runHour >= 0 && runHour <= 10) {
-      return TIME_TITLES.MORNING_TITLE + ACT_TITLES.get(run.type);
-    }
-    if (runHour > 10 && runHour <= 12) {
-      return TIME_TITLES.MIDDAY_TITLE + ACT_TITLES.get(run.type);
-    }
-    if (runHour > 12 && runHour <= 18) {
-      return TIME_TITLES.AFTERNOON_TITLE + ACT_TITLES.get(run.type);
-    }
-    if (runHour > 18 && runHour <= 19) {
-      return TIME_TITLES.EVENING_TITLE + ACT_TITLES.get(run.type);
-    }
-    return TIME_TITLES.NIGHT_TITLE + ACT_TITLES.get(run.type);
+  const timePeriod = getTimePeriod(runHour);
+  const activityTitle = ACT_TITLES[run.type] || run.type;
+  return `${timePeriod}${activityTitle}`;
 };
 
 export interface IViewState {
