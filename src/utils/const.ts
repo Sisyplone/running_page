@@ -120,6 +120,9 @@ const ACT_TITLES: { [key: string]: string } = {
   "Walk": IS_CHINESE ? "步行": "Walk"
 };
 
+// 定义运动类型顺序
+const ACTIVITY_ORDER = ['Run', 'Trail Run', 'Hike', 'Ride', 'Walk'];
+
 export {
   USE_GOOGLE_ANALYTICS,
   GOOGLE_ANALYTICS_TRACKING_ID,
@@ -142,6 +145,7 @@ export {
   LIGHTS_ON,
   RICH_TITLE,
   ACTIVITY_TYPES,
+  ACTIVITY_ORDER,
 };
 
 const dark_vanilla = 'rgb(228,212,220)';

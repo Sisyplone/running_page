@@ -6,6 +6,7 @@ import useHover from '@/hooks/useHover';
 import { yearStats } from '@assets/index';
 import { loadSvgComponent } from '@/utils/svgUtils';
 import WorkoutStat from '@/components/WorkoutStat';
+import { ACTIVITY_ORDER } from '@/utils/const';
 
 // 类型定义
 interface YearStatProps {
@@ -69,7 +70,16 @@ const YearStat: React.FC<YearStatProps> = ({ year, onClick, onClickTypeInYear })
     : 0;
 
   // 生成运动类型统计数据
-  const workoutsArr = Object.entries(cumulativeDataMap).sort((a, b) => b[1][0] - a[1][0]);
+  const workoutsArr = Object.entries(cumulativeDataMap).sort(([typeA], [typeB]) => {
+    const indexA = ACTIVITY_ORDER.indexOf(typeA);
+    const indexB = ACTIVITY_ORDER.indexOf(typeB);
+
+    // 如果类型在 desiredOrder 中未找到，则将其放在最后
+    const orderA = indexA === -1 ? ACTIVITY_ORDER.length : indexA;
+    const orderB = indexB === -1 ? ACTIVITY_ORDER.length : indexB;
+
+    return orderA - orderB;
+  });
 
   // 渲染心率统计
   const renderHeartRate = () =>
@@ -80,13 +90,13 @@ const YearStat: React.FC<YearStatProps> = ({ year, onClick, onClickTypeInYear })
     workoutsArr.map(([type, [count, , totalMeters]]) => (
       <WorkoutStat
         key={type}
-        value={count}
+        value={count.toString()}
         description={`${type}s`}
         distance={(totalMeters / 1000).toFixed(0)}
         color={colorFromType(type)}
-        onClick={(e) => {
-          e.stopPropagation();
+        onClick={(e:Event) => {
           onClickTypeInYear(year, type);
+          e.stopPropagation();
         }}
       />
     ));
@@ -98,7 +108,7 @@ const YearStat: React.FC<YearStatProps> = ({ year, onClick, onClickTypeInYear })
         {sumDistance > 0 && (
           <WorkoutStat
             key="total"
-            value={filteredRuns.length}
+            value={filteredRuns.length.toString()}
             description=" Total"
             distance={(sumDistance / 1000).toFixed(0)}
           />
