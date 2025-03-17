@@ -1,4 +1,4 @@
-import { locationForRun, titleForRun } from '@/utils/utils';
+import {locationForRun, titleForRun} from '@/utils/utils';
 import activities from '@/static/activities.json';
 
 const useActivities = () => {

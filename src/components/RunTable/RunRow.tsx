@@ -1,4 +1,4 @@
-import { formatPace, titleForRun, formatRunTime, Activity, RunIds } from '@/utils/utils';
+import { formatPace, titleForRun, formatRunTime, Activity, RunIds, colorFromType } from '@/utils/utils';
 import styles from './style.module.css';
 
 interface IRunRowProperties {
@@ -15,6 +15,26 @@ const RunRow = ({ elementIndex, locateActivity, run, runIndex, setRunIndex }: IR
   const heartRate = run.average_heartrate;
   const runTime = formatRunTime(run.moving_time);
   const elevHigh = run.elevation_high;
+
+  let titleClass = styles.runColor;
+  switch (run.type) {
+    case "Run":
+      titleClass = styles.runColor;
+      break;
+    case "Ride":
+      titleClass = styles.rideColor;
+      break;
+    case "Hike":
+      titleClass = styles.hikeColor;
+      break;
+    case "Trail Run":
+      titleClass = styles.trailRunColor;
+      break;
+    default:
+      titleClass = styles.runColor;
+      break;
+  }
+
   const handleClick = () => {
     if (runIndex === elementIndex) {
       setRunIndex(-1);
@@ -27,9 +47,10 @@ const RunRow = ({ elementIndex, locateActivity, run, runIndex, setRunIndex }: IR
 
   return (
     <tr
-      className={`${styles.runRow} ${runIndex === elementIndex ? styles.selected : ''}`}
+      className={`${styles.runRow} ${runIndex === elementIndex ? styles.selected : ''} ${titleClass}`}
       key={run.start_date_local}
       onClick={handleClick}
+      style={{'color': colorFromType(run.type)}}
     >
       <td>{titleForRun(run)}</td>
       <td>{distance}</td>

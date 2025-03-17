@@ -67,11 +67,16 @@ class Generator:
         for activity in self.client.get_activities(**filters):
             if self.only_run and activity.type != "Run":
                 continue
+            if not activity.map.summary_polyline:
+                continue
             if IGNORE_BEFORE_SAVING:
                 if activity.map and activity.map.summary_polyline:
                     activity.map.summary_polyline = filter_out(
                         activity.map.summary_polyline
                     )
+            if "Trail Run" in activity.name:
+                activity.type = "Trail Run"
+
             activity.subtype = activity.type
             created = update_or_create_activity(self.session, activity)
             if created:

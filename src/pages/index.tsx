@@ -22,6 +22,7 @@ import {
   sortDateFunc,
   titleForShow,
   RunIds,
+  filterTypeRuns,
 } from '@/utils/utils';
 
 const Index = () => {
@@ -76,6 +77,25 @@ const Index = () => {
 
   const changeTitle = (title: string) => {
     changeByItem(title, 'Title', filterTitleRuns);
+  };
+
+  const changeType = (type: string) => {
+    changeByItem(type, 'Type', filterTypeRuns);
+  };
+
+  const changeTypeInYear = (year:string, type: string) => {
+    scrollToMap();
+    // type in year, filter year first, then type
+    if(year != 'Total'){
+      setYear(year);
+      setActivity(filterAndSortRuns(activities, year, filterYearRuns, sortDateFunc, type, filterTypeRuns));
+    }
+    else {
+      setYear(thisYear);
+      setActivity(filterAndSortRuns(activities, type, filterTypeRuns, sortDateFunc));
+    }
+    setRunIndex(-1);
+    setTitle(`${year} ${type} Type Heatmap`);
   };
 
   const locateActivity = (runIds: RunIds) => {
@@ -181,9 +201,10 @@ const Index = () => {
             changeYear={changeYear}
             changeCity={changeCity}
             changeTitle={changeTitle}
+            onClickTypeInYear={changeTypeInYear}
           />
         ) : (
-          <YearsStat year={year} onClick={changeYear} />
+          <YearsStat year={year} onClick={changeYear} onClickTypeInYear={changeTypeInYear}/>
         )}
       </div>
       <div className="w-full lg:w-2/3">

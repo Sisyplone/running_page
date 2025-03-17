@@ -33,9 +33,9 @@ const GOOGLE_ANALYTICS_TRACKING_ID = '';
 // styling: set to `true` if you want dash-line route
 const USE_DASH_LINE = false;
 // styling: route line opacity: [0, 1]
-const LINE_OPACITY = 0.8;
+const LINE_OPACITY = 1;
 // styling: map height
-const MAP_HEIGHT = 600;
+const MAP_HEIGHT = 500;
 //set to `false` if you want to hide the road label characters
 const ROAD_LABEL_DISPLAY = false;
 // update for now 2024/11/17 the privacy mode is true
@@ -43,7 +43,7 @@ const ROAD_LABEL_DISPLAY = false;
 const PRIVACY_MODE = false;
 // update for now 2024/11/17 the lights on default is false
 //set to `false` if you want to make light off as default, only effect when `PRIVACY_MODE` = false
-const LIGHTS_ON =false;
+const LIGHTS_ON =true;
 // richer title for the activity types (like garmin style)
 const RICH_TITLE = false;
 
@@ -52,7 +52,7 @@ const IS_CHINESE = true;
 const USE_ANIMATION_FOR_GRID = false;
 const CHINESE_INFO_MESSAGE = (yearLength: number, year: string): string => {
   const yearStr = year === 'Total' ? '所有' : ` ${year} `;
-  return `我用 App 记录自己跑步 ${yearLength} 年了，下面列表展示的是${yearStr}的数据`;
+  return `我用 App 记录自己户外运动 ${yearLength} 年了，下面列表展示的是${yearStr}的数据`;
 };
 const ENGLISH_INFO_MESSAGE = (yearLength: number, year: string): string =>
   `Running Journey with ${yearLength} Years, the table shows year ${year} data`;
@@ -78,6 +78,12 @@ const CYCLING_TITLE = IS_CHINESE ? '骑行' : 'Cycling';
 const SKIING_TITLE = IS_CHINESE ? '滑雪' : 'Skiing';
 const WALKING_TITLE = IS_CHINESE ? '步行' : 'Walking';
 
+const MORNING_TITLE = IS_CHINESE ? '清晨' : ' Morning';
+const MIDDAY_TITLE = IS_CHINESE ? '午间' : 'Midday';
+const AFTERNOON_TITLE = IS_CHINESE ? '午后' : 'Afternoon';
+const EVENING_TITLE = IS_CHINESE ? '傍晚' : 'Evening';
+const NIGHT_TITLE = IS_CHINESE ? '夜晚' : 'Night';
+
 const ACTIVITY_TYPES = {
   RUN_GENERIC_TITLE,
   RUN_TRAIL_TITLE,
@@ -98,6 +104,21 @@ const RUN_TITLES = {
   NIGHT_RUN_TITLE,
 };
 
+const TIME_TITLES = {
+  MORNING_TITLE,
+  MIDDAY_TITLE,
+  AFTERNOON_TITLE,
+  EVENING_TITLE,
+  NIGHT_TITLE,
+}
+
+const ACT_TITLES:Map<string, string> = new Map<string, string>();
+ACT_TITLES.set("Run", "跑步");
+ACT_TITLES.set("Trail Run", "越野跑");
+ACT_TITLES.set("Ride", "骑行");
+ACT_TITLES.set("Hike", "徒步");
+ACT_TITLES.set("Walk", "步行");
+
 export {
   USE_GOOGLE_ANALYTICS,
   GOOGLE_ANALYTICS_TRACKING_ID,
@@ -110,6 +131,8 @@ export {
   ROAD_LABEL_DISPLAY,
   INFO_MESSAGE,
   RUN_TITLES,
+  ACT_TITLES,
+  TIME_TITLES,
   USE_ANIMATION_FOR_GRID,
   USE_DASH_LINE,
   LINE_OPACITY,
@@ -120,12 +143,20 @@ export {
   ACTIVITY_TYPES,
 };
 
-const nike = 'rgb(224,237,94)'; // if you want change the main color change here src/styles/variables.scss
 const dark_vanilla = 'rgb(228,212,220)';
+const green = 'rgb(0,237,94)';
+const strava = 'rgb(233,95,42)';
+const peru = 'rgb(205, 133, 63)';
+const gold = 'rgb(255, 215, 0)';
+const white = 'rgb(253, 253, 255)';
 
 // If your map has an offset please change this line
 // issues #92 and #198
 export const NEED_FIX_MAP = false;
-export const MAIN_COLOR = nike;
+export const MAIN_COLOR = white;
 export const PROVINCE_FILL_COLOR = '#47b8e0';
 export const COUNTRY_FILL_COLOR = dark_vanilla;
+export const RUN_COLOR = gold;
+export const RIDE_COLOR = strava;
+export const HIKE_COLOR = peru;
+export const TRAIL_RUN_COLOR = green;
