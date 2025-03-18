@@ -32,7 +32,7 @@ const YearStat: React.FC<YearStatProps> = ({ year, onClick, onClickTypeInYear })
     streak,
     cumulativeDataMap,
     heartRateTotal,
-    heartRateNullCount
+    heartRateCount,
   } = filteredRuns.reduce(
     (acc, run) => {
       const { distance = 0, elevation_high = 0, average_speed, type, average_heartrate, streak } = run;
@@ -42,14 +42,20 @@ const YearStat: React.FC<YearStatProps> = ({ year, onClick, onClickTypeInYear })
       if (streak) acc.streak = Math.max(acc.streak, streak);
 
       if (average_speed) {
-        const [count, totalSeconds, totalMeters] = acc.cumulativeDataMap[type] || [0, 0, 0];
-        acc.cumulativeDataMap[type] = [count + 1, totalSeconds + distance / average_speed, totalMeters + distance];
+        const [count, totalSeconds, totalMeters, totalElevationGain, totalHeartRate, heartRateCount] = acc.cumulativeDataMap[type] || [0, 0, 0, 0, 0, 0];
+        acc.cumulativeDataMap[type] = [
+          count + 1,
+          totalSeconds + distance / average_speed,
+          totalMeters + distance,
+          totalElevationGain + elevation_high,
+          totalHeartRate + (average_heartrate || 0),
+          heartRateCount + (average_heartrate ? 1 : 0)
+        ];
       }
 
       if (average_heartrate) {
         acc.heartRateTotal += average_heartrate;
-      } else {
-        acc.heartRateNullCount++;
+        acc.heartRateCount++;
       }
 
       return acc;
@@ -58,15 +64,15 @@ const YearStat: React.FC<YearStatProps> = ({ year, onClick, onClickTypeInYear })
       sumDistance: 0,
       sumElevationGain: 0,
       streak: 0,
-      cumulativeDataMap: {} as Record<string, [number, number, number]>,
+      cumulativeDataMap: {} as Record<string, [number, number, number, number, number, number]>,
       heartRateTotal: 0,
-      heartRateNullCount: 0,
+      heartRateCount: 0,
     }
   );
 
   const hasHeartRate = heartRateTotal > 0;
   const avgHeartRate = hasHeartRate
-    ? (heartRateTotal / (filteredRuns.length - heartRateNullCount)).toFixed(0)
+    ? (heartRateTotal / heartRateCount).toFixed(0)
     : 0;
 
   // 生成运动类型统计数据
@@ -87,12 +93,14 @@ const YearStat: React.FC<YearStatProps> = ({ year, onClick, onClickTypeInYear })
 
   // 渲染不同类型的运动数据
   const renderWorkouts = () =>
-    workoutsArr.map(([type, [count, , totalMeters]]) => (
+    workoutsArr.map(([type, [count, , totalMeters, totalElevationGain, totalHeartRate, heartRateCount]]) => (
       <WorkoutStat
         key={type}
         value={count.toString()}
         description={`${type}s`}
         distance={(totalMeters / 1000).toFixed(0)}
+        elevationGain={totalElevationGain.toFixed(0)}
+        avgHeartRate={(totalHeartRate/heartRateCount).toFixed(0)}
         color={colorFromType(type)}
         onClick={(e:Event) => {
           onClickTypeInYear(year, type);
@@ -114,11 +122,11 @@ const YearStat: React.FC<YearStatProps> = ({ year, onClick, onClickTypeInYear })
           />
         )}
         {renderWorkouts()}
-        {sumElevationGain > 0 && (
-          <Stat value={sumElevationGain.toFixed(0)} description="M Elevation Gain" className="pb-2" />
-        )}
-        <Stat value={`${streak} day`} description=" Streak" />
-        {renderHeartRate()}
+        {/*{sumElevationGain > 0 && (*/}
+        {/*  <Stat value={sumElevationGain.toFixed(0)} description="M Elevation Gain" className="pb-2" />*/}
+        {/*)}*/}
+        {/*<Stat value={`${streak} day`} description=" Streak" />*/}
+        {/*{renderHeartRate()}*/}
       </section>
       {year !== "Total" && hovered && (
         <Suspense fallback="loading...">

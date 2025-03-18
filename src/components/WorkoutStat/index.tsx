@@ -9,6 +9,8 @@ interface WorkoutStatProps {
   pace?: string;
   className?: string;
   distance?: string;
+  elevationGain?: string;
+  avgHeartRate?: string;
   onClick?: () => void;
   color?: string;
 }
@@ -19,6 +21,8 @@ const WorkoutStat: React.FC<WorkoutStatProps> = ({
   pace,
   className = '',
   distance,
+  elevationGain,
+  avgHeartRate,
   onClick,
   color = MAIN_COLOR,
 }) => (
@@ -29,18 +33,33 @@ const WorkoutStat: React.FC<WorkoutStatProps> = ({
   >
     <span className="text-5xl font-bold italic">{intComma(value)}</span>
     <span className="text-2xl font-semibold italic">{description}</span>
-    {pace && (
-      <>
-        <span className="text-5xl font-bold italic"> {pace}</span>
-        <span className="text-2xl font-semibold italic"> Pace</span>
-      </>
-    )}
     {distance && (
-      <>
-        <span className="text-5xl font-bold italic"> {distance}</span>
-        <span className="text-2xl font-semibold italic"> KM</span>
-      </>
-    )}
+        <>
+          <span className="text-5xl font-bold italic"> {distance}</span>
+          <span className="text-2xl font-semibold italic"> KM</span>
+        </>
+      )}
+    <div
+    >
+      {pace && (
+        <>
+          <span className="text-3xl font-bold italic"> {pace}</span>
+          <span className="text-2xl font-semibold italic"> Pace</span>
+        </>
+      )}
+      {elevationGain && (
+        <>
+          <span className="text-2xl font-bold italic"> {elevationGain}</span>
+          <span className="text-xs font-semibold italic"> M ElevationGain</span>
+        </>
+      )}
+      {avgHeartRate && (
+        <>
+          <span className="text-2xl font-bold italic"> {avgHeartRate}</span>
+          <span className="text-xs font-semibold italic"> Avg Heart Rate</span>
+        </>
+      )}
+    </div>
   </div>
 );
 
