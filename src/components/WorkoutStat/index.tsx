@@ -29,7 +29,7 @@ const WorkoutStat: React.FC<WorkoutStatProps> = ({
   <div
     className={`${className} pb-2 w-100`}
     onClick={onClick}
-    style={{ color }}
+    style={{ color: color }}
   >
     <span className="text-5xl font-bold italic">{intComma(value)}</span>
     <span className="text-2xl font-semibold italic">{description}</span>

@@ -47,7 +47,7 @@ const RunTable = ({
       : bTotalSeconds - aTotalSeconds;
   };
   const sortElevFunc:SortFunc = (a: Activity, b: Activity) =>
-    sortFuncInfo === 'Elev Gain' ? a.elevation_high - b.elevation_high : b.elevation_high - a.elevation_high;
+    sortFuncInfo === 'Elev Gain' ? a.elevation_gain - b.elevation_gain : b.elevation_gain - a.elevation_gain;
 
   const sortDateFuncClick =
     sortFuncInfo === 'Date' ? sortDateFunc : sortDateFuncReverse;

@@ -10,53 +10,37 @@ interface IRunRowProperties {
 }
 
 const RunRow = ({ elementIndex, locateActivity, run, runIndex, setRunIndex }: IRunRowProperties) => {
-  const distance = (run.distance / 1000.0).toFixed(2);
+  const distance = (run.distance / 1000).toFixed(2);
   const paceParts = run.average_speed ? formatPace(run.average_speed) : null;
-  const heartRate = run.average_heartrate;
+  const heartRate = run.average_heartrate ? run.average_heartrate.toFixed(0) : null;
   const runTime = formatRunTime(run.moving_time);
-  const elevHigh = run.elevation_high;
-
-  let titleClass = styles.runColor;
-  switch (run.type) {
-    case "Run":
-      titleClass = styles.runColor;
-      break;
-    case "Ride":
-      titleClass = styles.rideColor;
-      break;
-    case "Hike":
-      titleClass = styles.hikeColor;
-      break;
-    case "Trail Run":
-      titleClass = styles.trailRunColor;
-      break;
-    default:
-      titleClass = styles.runColor;
-      break;
-  }
+  const elevationGain = run.elevation_gain;
+  const isSelected = runIndex === elementIndex;
+  const titleClass = styles.runRow;
+  const rowStyle = { color: colorFromType(run.type) };
 
   const handleClick = () => {
-    if (runIndex === elementIndex) {
+    if (isSelected) {
       setRunIndex(-1);
       locateActivity([]);
-      return
-    };
-    setRunIndex(elementIndex);
-    locateActivity([run.run_id]);
+    } else {
+      setRunIndex(elementIndex);
+      locateActivity([run.run_id]);
+    }
   };
 
   return (
     <tr
-      className={`${styles.runRow} ${runIndex === elementIndex ? styles.selected : ''} ${titleClass}`}
+      className={`${titleClass} ${isSelected ? styles.selected : ''}`}
       key={run.start_date_local}
       onClick={handleClick}
-      style={{'color': colorFromType(run.type)}}
+      style={rowStyle}
     >
       <td>{titleForRun(run)}</td>
       <td>{distance}</td>
       {paceParts && <td>{paceParts}</td>}
-      <td>{elevHigh}</td>
-      <td>{heartRate && heartRate.toFixed(0)}</td>
+      <td>{elevationGain}</td>
+      {heartRate && <td>{heartRate}</td>}
       <td>{runTime}</td>
       <td className={styles.runDate}>{run.start_date_local}</td>
     </tr>
