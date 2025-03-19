@@ -7,7 +7,13 @@ from generator import Generator
 
 
 # for only run type, we use the same logic as garmin_sync
-def run_strava_sync(client_id, client_secret, refresh_token, refresh_force="False", only_run=False):
+def run_strava_sync(
+  client_id,
+  client_secret,
+  refresh_token,
+  refresh_force="False",
+  only_run=False
+):
     generator = Generator(SQL_FILE)
     generator.set_strava_config(client_id, client_secret, refresh_token)
     # if you want to refresh data change False to True
